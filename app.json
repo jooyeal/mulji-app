@@ -18,7 +18,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription" : "위치정보의 공유를 허가"
+      }
     },
     "android": {
       "adaptiveIcon": {
