@@ -9,7 +9,7 @@ export class ApiClient {
   baseUrl: string;
   instance: AxiosInstance;
   constructor() {
-    this.baseUrl = "https://mulji-planner.vercel.app/api";
+    this.baseUrl = "https://mulji-planner.vercel.app/api/";
     this.instance = axios.create({ baseURL: this.baseUrl });
   }
 
@@ -18,11 +18,15 @@ export class ApiClient {
     params,
   }: {
     path: string;
-    params: object;
-  }): Promise<T | ApiResponse> {
+    params?: object;
+  }): Promise<ApiResponse & { data?: T }> {
     try {
       const res: AxiosResponse<T> = await this.instance.get(path, { params });
-      return res.data;
+      return {
+        status: "success",
+        message: "성공",
+        data: res.data,
+      };
     } catch (e) {
       console.error(e);
       return {
