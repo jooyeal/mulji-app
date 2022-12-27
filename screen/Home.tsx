@@ -1,6 +1,7 @@
 import { Image, StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
+import * as Location from "expo-location";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { TabParamList } from "../navigation/TabNavigation";
 import useMutation from "../hooks/useMutation";
@@ -30,7 +31,14 @@ const Home = ({}: Props) => {
   });
 
   const { mutate } = useMutation();
-
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        return;
+      }
+    })();
+  }, []);
   useEffect(() => {
     //update database of user's latitude and longitude
     (async () => {

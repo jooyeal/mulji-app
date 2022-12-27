@@ -10,7 +10,7 @@ import { Button } from "@rneui/themed";
 type Props = BottomTabScreenProps<TabParamList, "Profile">;
 
 const Profile = ({ navigation }: Props) => {
-  const { data, isLoading } = useQuery<{
+  const { data } = useQuery<{
     user: { email: string; username: string };
   }>({
     path: "getUser",
