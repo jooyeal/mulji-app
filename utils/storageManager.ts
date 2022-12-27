@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type StorageResponse = {
+export type StorageResponse = {
   status: "success" | "error";
   message: string;
 };
@@ -24,15 +24,22 @@ export const storeData = async (
   }
 };
 
-export const getData = async (
-  key: string
-): Promise<StorageResponse & { value?: string | null }> => {
+export const getData = async (key: string): Promise<string | null> => {
   try {
     const value = await AsyncStorage.getItem(key);
+    return value;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
+export const removeData = async (key: string): Promise<StorageResponse> => {
+  try {
+    await AsyncStorage.removeItem(key);
     return {
       status: "success",
-      value,
-      message: `${key} get 성공`,
+      message: "성공",
     };
   } catch (e) {
     console.error(e);

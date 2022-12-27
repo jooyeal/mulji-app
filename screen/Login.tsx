@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Input } from "@rneui/themed";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/RootNavigation";
 import useMutation from "../hooks/useMutation";
-import { storeData } from "../utils/storageManager";
+import { getData, storeData } from "../utils/storageManager";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -14,7 +14,19 @@ const Login = ({ navigation }: Props) => {
     email?: string;
     password?: string;
   }>();
+  const [isLogin, setIsLogin] = useState<boolean>(true);
   const { mutate } = useMutation();
+
+  useEffect(() => {
+    (async () => {
+      const user = await getData("user");
+      if (user) {
+        navigation.navigate("Home");
+      } else {
+        setIsLogin(false);
+      }
+    })();
+  }, []);
 
   const onPressLogin = () => {
     mutate({
@@ -22,16 +34,18 @@ const Login = ({ navigation }: Props) => {
       data: { ...loginInfo },
       onSuccess: () => {
         storeData("user", loginInfo?.email);
-        navigation.push("Home");
+        navigation.navigate("Home");
       },
       onError: (e) => console.log(e),
     });
   };
 
+  if (isLogin) {
+    return <View style={styles.container}></View>;
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>물지어플에 오신걸 환영합니다</Text>
-
       <Input
         style={styles.input}
         placeholder="이메일"

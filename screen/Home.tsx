@@ -9,25 +9,37 @@ import { isLocationChangedWithFloor } from "../utils/common";
 import useQuery from "../hooks/useQuery";
 
 type Props = BottomTabScreenProps<TabParamList, "Map">;
+type User = {
+  id: string;
+  latitude: number;
+  longitude: number;
+  username: string;
+};
 
-const Home = ({ navigation }: Props) => {
+const Home = ({}: Props) => {
   const [location, setLocation] = useState<{
     latitude?: number;
     longitude?: number;
   }>();
-  const { data } = useQuery({
+  //get users info in database except self
+  const { data } = useQuery<{ users: User[] }>({
     path: "getUsers",
+    asyncParams: {
+      email: () => getData("user"),
+    },
   });
+
   const { mutate } = useMutation();
 
   useEffect(() => {
+    //update database of user's latitude and longitude
     (async () => {
       const email = await getData("user");
       if (email && location?.latitude && location?.longitude) {
         mutate({
           path: "location",
           data: {
-            email: email.value,
+            email: email,
             latitude: location?.latitude,
             longitude: location?.longitude,
           },
@@ -35,12 +47,14 @@ const Home = ({ navigation }: Props) => {
       }
     })();
   }, [location?.latitude, location?.longitude]);
+
   return (
     <View>
       <MapView
         style={styles.map}
         showsUserLocation={true}
         onUserLocationChange={({ nativeEvent: { coordinate } }) => {
+          //update user latitude and longitude
           setLocation((prev) => {
             if (
               isLocationChangedWithFloor(
@@ -59,12 +73,15 @@ const Home = ({ navigation }: Props) => {
           });
         }}
       >
-        <Marker
-          coordinate={{ latitude: 37.5326, longitude: 127.024612 }}
-          title="Marker"
-        >
-          <Image source={require("../assets/favicon.png")} />
-        </Marker>
+        {data?.users.map((user) => (
+          <Marker
+            key={user.id}
+            coordinate={{ latitude: user.latitude, longitude: user.longitude }}
+            title={user.username}
+          >
+            <Image source={require("../assets/favicon.png")} />
+          </Marker>
+        ))}
       </MapView>
     </View>
   );

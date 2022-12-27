@@ -1,5 +1,4 @@
-import { StyleSheet, Image, View } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import { StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import RootNavigation from "./navigation/RootNavigation";
